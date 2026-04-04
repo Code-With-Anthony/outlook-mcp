@@ -2,14 +2,14 @@
 
 This repository contains a Model Context Protocol (MCP) Server for Microsoft Outlook. It effectively bridges the gap between Microsoft Graph API and autonomous AI Agents (like Cline or Claude Desktop), allowing the AI to safely perform operations in your Outlook inbox and calendar.
 
-## 🏗️ Architecture
+## Architecture
 This server follows a dual-application topology:
 - **Express HTTP Server:** Runs persistently on `localhost:3000` waiting for the end-user to approve the OAuth 2.0 Microsoft Authentication flow.
 - **MCP Server:** Runs locally over `stdio` strictly waiting to receive Tool Call JSON-RPC schemas from any connected MCP-compliant AI Agent.
 
 ---
 
-## 🚀 Setup & Installation
+## Setup & Installation
 
 ### 1. Registering the Microsoft App
 Before you start, you must register a new application within the [Azure Portal](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade):
@@ -42,7 +42,7 @@ PORT=3000
 
 ---
 
-## 🧪 Testing & Usage (Connecting to VS Code / Cline)
+## Testing & Usage (Connecting to VS Code / Cline)
 
 1. **Start the local server instance:**
    ```bash
@@ -72,7 +72,7 @@ Once configured, you can ask Cline things like:
 
 ---
 
-## 👨‍💻 Developer Guide: Adding New Capabilities
+## Developer Guide: Adding New Capabilities
 
 If you are expanding this codebase to support new Microsoft endpoints (e.g. OneDrive or ToDo), you MUST follow standard protocol implementation steps:
 
