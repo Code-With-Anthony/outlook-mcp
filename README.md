@@ -1,0 +1,2 @@
+# outlook-mcp
+coming soon
