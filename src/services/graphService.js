@@ -5,13 +5,16 @@ const graphClient = require('./graphClient');
  */
 async function fetchEmails(top = 10) {
     try {
+        console.error(`[GraphService] Fetching emails, top=${top}`);
         const result = await graphClient
             .api('/me/messages')
             .select('subject,sender,bodyPreview,receivedDateTime')
             .orderby('receivedDateTime DESC')
             .top(top)
             .get();
-            
+
+        console.error(`[GraphService] Result: ${JSON.stringify(result).substring(0, 500)}`);
+
         return result.value.map(message => ({
             subject: message.subject,
             sender: message.sender?.emailAddress?.name || message.sender?.emailAddress?.address,
@@ -20,7 +23,9 @@ async function fetchEmails(top = 10) {
             received: message.receivedDateTime
         }));
     } catch (error) {
-        throw new Error(`Failed to fetch emails: ${error.message}`);
+        console.error(`[GraphService] Error details:`, error);
+        console.error(`[GraphService] Error body:`, error.body || error.response?.body || 'none');
+        throw new Error(`Failed to fetch emails: ${error.message || 'unknown error'}`);
     }
 }
 
@@ -36,7 +41,7 @@ async function searchEmails(keyword) {
             .select('subject,sender,bodyPreview,receivedDateTime')
             .top(15)
             .get();
-            
+
         return result.value.map(message => ({
             subject: message.subject,
             sender: message.sender?.emailAddress?.name || message.sender?.emailAddress?.address,
@@ -86,18 +91,18 @@ async function getCalendarEvents(daysLookAhead = 7) {
         const now = new Date();
         const future = new Date();
         future.setDate(now.getDate() + daysLookAhead);
-        
+
         // Use calendarView to expand recurring events properly
         const startDateTime = now.toISOString();
         const endDateTime = future.toISOString();
-        
+
         const result = await graphClient
             .api(`/me/calendarView?startDateTime=${startDateTime}&endDateTime=${endDateTime}`)
             .select('subject,start,end,location,organizer')
             .orderby('start/dateTime ASC')
             .top(20)
             .get();
-            
+
         return result.value.map(event => ({
             subject: event.subject,
             start: event.start?.dateTime,
@@ -129,11 +134,11 @@ async function createEvent(title, startTime, endTime) {
         };
 
         const result = await graphClient.api('/me/events').post(event);
-        return { 
-            status: "success", 
+        return {
+            status: "success",
             message: "Event created successfully.",
             eventId: result.id,
-            webLink: result.webLink 
+            webLink: result.webLink
         };
     } catch (error) {
         throw new Error(`Failed to create event: ${error.message}`);
