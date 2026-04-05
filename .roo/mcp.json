@@ -1,0 +1,12 @@
+{
+	"mcpServers": {
+		"outlook-mcp": {
+			"command": "node",
+			"args": [
+				"D:\\outlook-mcp\\outlook-mcp\\src\\server.js"
+			],
+			"disabled": false,
+			"autoApprove": []
+		}
+	}
+}

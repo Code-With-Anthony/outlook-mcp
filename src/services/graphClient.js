@@ -1,38 +1,57 @@
 const { Client } = require('@microsoft/microsoft-graph-client');
 const { pca, scopes } = require('../config/authConfig');
 const tokenStore = require('../config/tokenStore');
-// We require isomorphic-fetch globally for Microsoft Graph Client if using Node < 18, 
-// but since we are on Latest LTS (Node 20+), global 'fetch' is natively supported!
 
 /**
- * Initializes the Microsoft Graph Client.
- * It uses a custom Authentication Provider that automatically fetches 
- * our cached account and acquires a fresh Access Token silently.
+ * Gets the account from the MSAL cache.
  */
-const graphClient = Client.init({
-    authProvider: async (done) => {
-        try {
-            if (!tokenStore.isAuthenticated()) {
-                const err = new Error("Not authenticated. The user has not logged in via OAuth yet.");
-                console.error(err.message);
-                return done(err, null);
-            }
-            
-            const account = tokenStore.getAccount();
-            
-            // acquireTokenSilent automatically looks up the refresh token in the MSAL cache
-            // and gets a new access token without requiring user interaction!
-            const response = await pca.acquireTokenSilent({
-                account: account,
-                scopes: scopes
-            });
-            
-            // Return the access token to the Graph Client
-            done(null, response.accessToken);
-        } catch (error) {
-            console.error("Failed to acquire token silently:", error);
-            // If this fails, the refresh token might be expired and user must login again.
-            done(error, null);
+async function getAccountFromCache() {
+    try {
+        const accounts = await pca.getTokenCache().getAllAccounts();
+        console.error(`[GraphClient] Found ${accounts ? accounts.length : 0} accounts in cache`);
+        if (accounts && accounts.length > 0) {
+            console.error(`[GraphClient] Account: ${JSON.stringify(accounts[0]).substring(0, 200)}`);
+            return accounts[0];
+        }
+    } catch (error) {
+        console.error(`[GraphClient] Failed to get account from cache: ${error.message}`);
+        console.error(`[GraphClient] Stack: ${error.stack}`);
+    }
+    return null;
+}
+
+/**
+ * Gets an access token directly.
+ */
+async function getAccessToken() {
+    try {
+        const account = await getAccountFromCache();
+        if (!account) {
+            throw new Error("No account found in MSAL cache.");
+        }
+
+        console.error('[GraphClient] Attempting acquireTokenSilent...');
+        const response = await pca.acquireTokenSilent({
+            account: account,
+            scopes: scopes
+        });
+
+        console.error(`[GraphClient] Token acquired: ${response.accessToken ? 'yes' : 'no'}`);
+        console.error(`[GraphClient] Token (first 50 chars): ${response.accessToken ? response.accessToken.substring(0, 50) : 'none'}`);
+        return response.accessToken;
+    } catch (error) {
+        console.error("[GraphClient] Failed to acquire token:", error.message);
+        throw error;
+    }
+}
+
+/**
+ * Initializes the Microsoft Graph Client with a middleware approach.
+ */
+const graphClient = Client.initWithMiddleware({
+    authProvider: {
+        getAccessToken: async () => {
+            return await getAccessToken();
         }
     }
 });

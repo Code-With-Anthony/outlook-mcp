@@ -117,3 +117,6 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Security
+msalTokenCache.json
