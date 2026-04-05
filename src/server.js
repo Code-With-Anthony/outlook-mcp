@@ -47,7 +47,7 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
 // B. Execute the actual function when the LLM makes a tool call request
 mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
-    
+
     console.error(`[MCP] Tool invoked by AI Agent: ${name}`);
 
     try {
@@ -80,7 +80,7 @@ async function startMcpServer() {
     const transport = new StdioServerTransport();
     await mcpServer.connect(transport);
     console.error("✅ Outlook MCP Server is successfully listening on stdio.");
-    console.error("🤖 Ready to receive commands from Cline, Claude Desktop, or other agents!");
+    console.error("🤖 Ready to receive commands from Roo!");
 }
 
 startMcpServer().catch(err => {
