@@ -1,6 +1,6 @@
 # Outlook MCP Server
 
-This repository contains a Model Context Protocol (MCP) Server for Microsoft Outlook. It effectively bridges the gap between Microsoft Graph API and autonomous AI Agents (like Cline or Claude Desktop), allowing the AI to safely perform operations in your Outlook inbox and calendar.
+This repository contains a Model Context Protocol (MCP) Server for Microsoft Outlook. It effectively bridges the gap between Microsoft Graph API and autonomous AI Agents (like Roo Code or Claude Desktop), allowing the AI to safely perform operations in your Outlook inbox and calendar.
 
 ## Architecture
 This server follows a dual-application topology:
@@ -42,7 +42,7 @@ PORT=3000
 
 ---
 
-## Testing & Usage (Connecting to VS Code / Cline)
+## Testing & Usage (Connecting to VS Code / Roo Code)
 
 1. **Start the local server instance:**
    ```bash
@@ -50,7 +50,7 @@ PORT=3000
    ```
 2. Navigate your web browser to `http://localhost:3000/login`.
 3. Sign into Microsoft and grant permissions. The system will hold your token actively in memory and automatically request silent refresh mechanisms going forward!
-4. **Link to VS Code:** In VS Code, open the Cline Extension's MCP Settings (`cline_mcp.json`) and append the local executing environment:
+4. **Link to VS Code:** In VS Code, open the Roo Code Extension's MCP Settings and append the local executing environment:
 
 ```json
 {
@@ -66,8 +66,8 @@ PORT=3000
 ```
 
 *Note: Replace the path above with your absolute system path to `src/server.js`.*
-Once configured, you can ask Cline things like:
-> `"Hey Cline, show me the 3 latest emails I received."`
+Once configured, you can ask Roo Code things like:
+> `"Hey Roo, show me the 3 latest emails I received."`
 > `"What meetings do I have tomorrow? Create one with John at 3 PM UTC."`
 
 ---
